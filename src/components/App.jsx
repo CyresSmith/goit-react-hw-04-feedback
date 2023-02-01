@@ -1,62 +1,61 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import Box from './shared/Box';
 import Section from './shared/Section/Section';
 import FeedbackOptions from './FeedbackOptions';
 import Statistics from './Statistics';
 
-class App extends Component {
-  state = {
+const App = () => {
+  const [feedbackState, setFeedbackState] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-  };
+  });
 
-  feedbackCollect = key => {
-    this.setState(prevState => {
-      return { [key]: prevState[key] + 1 };
+  const feedbackCollect = key => {
+    setFeedbackState(prevState => {
+      return { ...prevState, [key]: prevState[key] + 1 };
     });
   };
 
-  countTotalFeedback() {
-    const { good, neutral, bad } = this.state;
+  const countTotalFeedback = () => {
+    const { good, neutral, bad } = feedbackState;
     const total = { total: good + neutral + bad };
     return total;
-  }
+  };
 
-  countPositiveFeedbackPercentage() {
-    const { good } = this.state;
-    const total = this.countTotalFeedback().total;
+  const countPositiveFeedbackPercentage = () => {
+    const { good } = feedbackState;
+    const total = countTotalFeedback().total;
     const positive = ((good / total) * 100).toFixed(2);
     const PositiveFeedbackPercentage = {
       positive: positive + '%',
     };
     return PositiveFeedbackPercentage;
-  }
+  };
 
-  render() {
-    const statTypesArr = Object.keys(this.state);
-    const statDataObj = Object.assign(
-      {},
-      this.state,
-      this.countTotalFeedback(),
-      this.countPositiveFeedbackPercentage()
-    );
+  const statTypesArr = Object.keys(feedbackState);
 
-    return (
-      <Box variant="container">
-        <Section title="Pleas Leave Feedback">
-          <FeedbackOptions
-            statTypesArr={statTypesArr}
-            onClick={this.feedbackCollect}
-          />
-        </Section>
+  const statDataObj = Object.assign(
+    {},
+    feedbackState,
+    countTotalFeedback(),
+    countPositiveFeedbackPercentage()
+  );
 
-        <Section title="Statistic">
-          <Statistics statDataObj={statDataObj} />
-        </Section>
-      </Box>
-    );
-  }
-}
+  return (
+    <Box variant="container">
+      <Section title="Pleas Leave Feedback">
+        <FeedbackOptions
+          statTypesArr={statTypesArr}
+          onClick={feedbackCollect}
+        />
+      </Section>
+
+      <Section title="Statistic">
+        <Statistics statDataObj={statDataObj} />
+      </Section>
+    </Box>
+  );
+};
 
 export default App;
